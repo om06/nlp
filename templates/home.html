@@ -33,7 +33,14 @@
 
     <form class="form round-border" method="post" action="/" enctype="multipart/form-data">
         {% csrf_token %}
-
+        <p>Steps to transcribe file:</p>
+        <ul>
+            <li>Enter a name for the file</li>
+            <li>Select a audio file with .wav extension</li>
+            <li>Hit upload button</li>
+            <li>File will be verified and uploaded and will be listed in below table with status converting</li>
+            <li>Once the file get transcribed it will status will change to Completed and you can check its text.</li>
+        </ul>
         <div class="row">
             <div class="col-6">
                 <input type="text" name="name" class="form-control" placeholder="Name" required/>
