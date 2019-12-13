@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Audio to Text converter</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+          integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+    <!--Custom css-->
+    <style>
+        .round-border {
+            border-radius: 10px;
+        }
+        .form {
+            background: #eee;
+            padding: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<!--Body wrapper-->
+<!--=================================================================================================================-->
+<div class="container">
+    <!-- Top heading -->
+    <!--=============================================================================================================-->
+    <h1 class="text-center">Audio transcription</h1>
+
+    <form class="form round-border" method="post" action="/" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-6">
+                <input type="text" name="name" class="form-control" placeholder="Name" required/>
+            </div>
+
+            <div class="col-6">
+                <div class="custom-file">
+                    <input type="file" name="audio" class="custom-file-input" id="customFile"
+                           accept=".wav"
+                           required>
+                    <label class="custom-file-label" for="customFile">Choose file</label>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="text-center">
+            <button type="submit" class="mt-4 btn btn-success">
+                Upload
+            </button>
+            <p class="mt-4 {{message.class}}">{{message.text}}</p>
+        </div>
+    </form>
+
+    <!-- Separator -->
+    <!--=============================================================================================================-->
+    <hr/>
+
+    <!-- Table heading -->
+    <!--=============================================================================================================-->
+    <h2 class="text-center">List of converted files</h2>
+
+    <!-- Transcription table -->
+    <!--=============================================================================================================-->
+    <table class="table text-center round-border">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Audio File</th>
+                <th>Transcription</th>
+                <th>Status</th>
+                <th>Updated at</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for transcription in transcriptions %}
+
+            <tr>
+                <td>{{transcription.name}}</td>
+                <td><a href="{{transcription.audio.url}}">{{transcription.audio}}</a></td>
+                <td>
+                    {% if transcription.text %}
+                    {{transcription.text|truncatechars:30}}
+                    {% else %}
+                    ---
+                    {% endif %}
+                </td>
+                <td>{{transcription.status}}</td>
+                <td>{{transcription.updated_at}}</td>
+                <td>
+                    <a href="{% url 'delete_transcription' pk=transcription.pk %}">
+                        <button class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </a>
+                </td>
+            </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if not transcriptions %}
+        <div class="jumbotron text-center round-border">
+          <h1>Oops !!!</h1>
+          <p>No audio files available, upload some...</p>
+        </div>
+    {% endif %}
+</div>
+<!--JavaScripts-->
+<!--=================================================================================================================-->
+
+<!--BS4 Dependencies-->
+<!--*****************************************************************************************************************-->
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+
+<!--Custom scripts-->
+<!--*****************************************************************************************************************-->
+<script>
+// Add the following code if you want the name of the file appear on select
+$(".custom-file-input").on("change", function() {
+  var fileName = $(this).val().split("\\").pop();
+  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+});
+</script>
+</body>
+</html>
