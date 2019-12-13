@@ -1,7 +1,7 @@
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.db import transaction
-
-from .models import Transcription, TranscriptionStatus
+from .models import Transcription
 from .utils import convert_audio_to_text
 
 
@@ -23,6 +23,17 @@ def home(request):
         try:
             name  = request.POST['name']
             audio = request.FILES['audio']
+            if not name:
+                raise Exception("Please enter the name for this conversion")
+            if not audio:
+                raise Exception("Please select the audio file for the conversion")
+
+            if 'audio' not in audio.content_type:
+                raise Exception("Please select audio file only")
+
+            if audio.size <= 0:
+                raise Exception("Audio file is either invalid or corrupt, please select other file")
+
             with transaction.atomic():
                 transcription        = Transcription.objects.create(name=name, audio=audio)
 
@@ -31,10 +42,7 @@ def home(request):
                 # convert_audio_to_text.delay(transcription.pk)
 
             message['text'] = "File uploaded successfully"
-            if not name:
-                raise Exception("Please enter the name for this conversion")
-            if not audio:
-                raise Exception("Please select the audio file for the conversion")
+            return redirect('home')
 
         except KeyError:
             raise Exception("Either name or audio is missing from the form data")
