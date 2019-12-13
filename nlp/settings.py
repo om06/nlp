@@ -23,9 +23,29 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '3-dw_@*mc^nmy00fnci7bp!$cus89k*a9!=hrkw!sqe=rm2quw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+# CELERY SETTINGS
+# ======================================================================================================================
+CELERY_BROKER_URL = 'pyamqp://{user}:{password}@{host}/{vhost}'.format(
+    user='<rabbitmq_user>',
+    password='<rabbitmq_user_password>',
+    host="<rabbitmq_host>",
+    vhost='<rabbitmq_vhost>'
+)
+
+CELERY_TASK_ALWAYS_EAGER = False if CELERY_BROKER_URL else True
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'django-db'
+
+CELERY_BEAT_SCHEDULE = {}
+
+# Allowed Domains and IP to access this project
+# TODO:- Never use wildcard in production, mention a particular IP or Domain here
+# ======================================================================================================================
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -130,20 +150,3 @@ STATIC_URL = '/static/'
 # ======================================================================================================================
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
-
-# CELERY SETTINGS
-# ======================================================================================================================
-CELERY_BROKER_URL = 'pyamqp://{user}:{password}@{host}/{vhost}'.format(
-    user='nlp_user',
-    password='nlp@password',
-    host="localhost",
-    vhost='nlp'
-)
-CELERY_TASK_ALWAYS_EAGER = False if CELERY_BROKER_URL else True
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_RESULT_BACKEND = 'django-db'
-
-CELERY_BEAT_SCHEDULE = {}
