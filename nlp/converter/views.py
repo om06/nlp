@@ -38,8 +38,8 @@ def home(request):
                 transcription        = Transcription.objects.create(name=name, audio=audio)
 
                 # Asynchronously convert the audio into text
-                convert_audio_to_text(transcription.pk)
-                # convert_audio_to_text.delay(transcription.pk)
+                # convert_audio_to_text(transcription.pk)
+                convert_audio_to_text.delay(transcription.pk)
 
             message['text'] = "File uploaded successfully"
             return redirect('home')
